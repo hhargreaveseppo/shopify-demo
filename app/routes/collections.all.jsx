@@ -58,6 +58,7 @@ export default function Collection() {
   /** @type {LoaderReturnData} */
   const {products} = useLoaderData();
 
+  // sort by here
   return (
     <div className="collection">
       <h1>Products</h1>

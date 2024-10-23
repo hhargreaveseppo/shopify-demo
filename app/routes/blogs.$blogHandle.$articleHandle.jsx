@@ -22,6 +22,7 @@ export async function loader(args) {
   return defer({...deferredData, ...criticalData});
 }
 
+
 /**
  * Load data necessary for rendering content above the fold. This is the critical data
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.

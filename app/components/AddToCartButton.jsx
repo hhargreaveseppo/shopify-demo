@@ -1,5 +1,6 @@
 import {CartForm} from '@shopify/hydrogen';
 
+
 /**
  * @param {{
  *   analytics?: unknown;
@@ -32,6 +33,7 @@ export function AddToCartButton({
           >
             {children}
           </button>
+          {/* <ShopPayButton variantIds={[children.variantId]} storeDomain="www.myshop.com" />; */}
         </>
       )}
     </CartForm>

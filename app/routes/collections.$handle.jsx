@@ -1,56 +1,63 @@
-import {defer, redirect} from '@shopify/remix-oxygen';
-import {useLoaderData, Link} from '@remix-run/react';
+import { defer, redirect } from '@shopify/remix-oxygen';
+import { useLoaderData, Link } from '@remix-run/react';
 import {
   getPaginationVariables,
   Image,
   Money,
   Analytics,
 } from '@shopify/hydrogen';
-import {useVariantUrl} from '~/lib/variants';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import { useVariantUrl } from '~/lib/variants';
+import { PaginatedResourceSection } from '~/components/PaginatedResourceSection';
+import getStringAssignment from '~/utils/get-string-assignment';
+import { useEffect, useState } from 'react';
+import { getUserContext } from '~/utils/get-user-context';
 
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
+export const meta = ({ data }) => {
+  return [{ title: `Hydrogen | ${data?.collection.title ?? ''} Collection` }];
 };
 
 /**
  * @param {LoaderFunctionArgs} args
  */
 export async function loader(args) {
-  // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  return defer({...deferredData, ...criticalData});
+  return defer({ ...deferredData, ...criticalData });
 }
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- * @param {LoaderFunctionArgs}
- */
-async function loadCriticalData({context, params, request}) {
-  const {handle} = params;
-  const {storefront} = context;
+async function loadCriticalData({ context, params, request }) {
+  const { handle } = params;
+  const { storefront } = context;
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 8,
   });
 
+  const userContext = getUserContext(request); // Extract cookies, userId, and URL params
+  
+  const userId = userContext.userId || 'guest'; // Use userId or fallback to 'guest'
+  const plan = userContext.cookies.plan || 'free'; // Example: extract 'plan' from cookies
+  const forcedVariation = userContext.urlParams.variation || 'default'; // Example: get 'sort' query param
+  
   if (!handle) {
     throw redirect('/collections');
   }
 
-  const [{collection}] = await Promise.all([
+  const [{ collection }] = await Promise.all([
     storefront.query(COLLECTION_QUERY, {
-      variables: {handle, ...paginationVariables},
-      // Add other queries here, so that they are loaded in parallel
+      variables: { handle, ...paginationVariables },
     }),
   ]);
+
+  const variation = await getStringAssignment(
+    'price-sort', 
+    userId,
+    { params: forcedVariation }, // Send the user's url param as an attribute for Eppo
+    'control' // Default if the flag doesn't exist
+  );
 
   if (!collection) {
     throw new Response(`Collection ${handle} not found`, {
@@ -60,32 +67,45 @@ async function loadCriticalData({context, params, request}) {
 
   return {
     collection,
+    variation,
+    userContext
   };
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- * @param {LoaderFunctionArgs}
- */
-function loadDeferredData({context}) {
+function loadDeferredData({ context }) {
   return {};
 }
 
 export default function Collection() {
-  /** @type {LoaderReturnData} */
-  const {collection} = useLoaderData();
+  const { collection, variation, userContext } = useLoaderData();
+
+  // Sort products by price based on the feature flag
+  const sortedProducts = [...collection.products.nodes];
+  if (variation === 'high-to-low') {
+    sortedProducts.sort((a, b) => {
+      const priceA = parseFloat(a.priceRange.minVariantPrice.amount);
+      const priceB = parseFloat(b.priceRange.minVariantPrice.amount);
+      return priceB - priceA; // Sort descending (highest to lowest)
+    });
+  }
+  else if (variation === "low-to-high") {
+    sortedProducts.sort((a, b) => {
+      const priceA = parseFloat(a.priceRange.minVariantPrice.amount);
+      const priceB = parseFloat(b.priceRange.minVariantPrice.amount);
+      return priceA - priceB; // Sort descending (highest to lowest)
+    });
+  }
 
   return (
     <div className="collection">
       <h1>{collection.title}</h1>
       <p className="collection-description">{collection.description}</p>
+      <p><strong>Sorting algorithm: {variation}</strong></p> {/* Display the variation */}
       <PaginatedResourceSection
-        connection={collection.products}
+        connection={{ ...collection.products, nodes: sortedProducts }}
         resourcesClassName="products-grid"
       >
-        {({node: product, index}) => (
+        {({ node: product, index }) => (
           <ProductItem
             key={product.id}
             product={product}
@@ -105,13 +125,7 @@ export default function Collection() {
   );
 }
 
-/**
- * @param {{
- *   product: ProductItemFragment;
- *   loading?: 'eager' | 'lazy';
- * }}
- */
-function ProductItem({product, loading}) {
+function ProductItem({ product, loading }) {
   const variant = product.variants.nodes[0];
   const variantUrl = useVariantUrl(product.handle, variant.selectedOptions);
   return (
@@ -138,6 +152,7 @@ function ProductItem({product, loading}) {
   );
 }
 
+// GraphQL Fragment for Product Item
 const PRODUCT_ITEM_FRAGMENT = `#graphql
   fragment MoneyProductItem on MoneyV2 {
     amount
@@ -173,7 +188,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
   }
 `;
 
-// NOTE: https://shopify.dev/docs/api/storefront/2022-04/objects/collection
+// GraphQL query for fetching collection data
 const COLLECTION_QUERY = `#graphql
   ${PRODUCT_ITEM_FRAGMENT}
   query Collection(
@@ -209,8 +224,3 @@ const COLLECTION_QUERY = `#graphql
     }
   }
 `;
-
-/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
-/** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
-/** @typedef {import('storefrontapi.generated').ProductItemFragment} ProductItemFragment */
-/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */

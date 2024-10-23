@@ -3,6 +3,7 @@ import {hydrogen} from '@shopify/hydrogen/vite';
 import {oxygen} from '@shopify/mini-oxygen/vite';
 import {vitePlugin as remix} from '@remix-run/dev';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import commonjs from '@rollup/plugin-commonjs';
 
 export default defineConfig({
   plugins: [
@@ -17,6 +18,7 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
+    commonjs(),
   ],
   build: {
     // Allow a strict Content-Security-Policy
@@ -35,7 +37,7 @@ export default defineConfig({
        * Include 'example-dep' in the array below.
        * @see https://vitejs.dev/config/dep-optimization-options
        */
-      include: [],
+      include: ["@eppo/node-server-sdk", "@eppo/js-client-sdk"],
     },
   },
 });

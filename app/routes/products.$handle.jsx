@@ -11,6 +11,8 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 
+import {ShopPayButton} from '@shopify/hydrogen';
+
 /**
  * @type {MetaFunction<typeof loader>}
  */

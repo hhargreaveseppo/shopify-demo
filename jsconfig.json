@@ -15,5 +15,5 @@
     "./**/*.d.ts",
     "./**/*.js",
     "./**/*.jsx"
-  ]
+, "app/components/EppoRandomizationProvider.jsx"  ]
 }

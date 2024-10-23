@@ -3,6 +3,7 @@ import {Await, NavLink, useAsyncValue} from '@remix-run/react';
 import {useAnalytics, useOptimisticCart} from '@shopify/hydrogen';
 import {useAside} from '~/components/Aside';
 
+
 /**
  * @param {HeaderProps}
  */
@@ -21,6 +22,7 @@ export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
       />
       <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
     </header>
+    
   );
 }
 

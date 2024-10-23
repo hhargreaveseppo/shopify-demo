@@ -3,6 +3,8 @@ import {Link} from '@remix-run/react';
 import {useAside} from '~/components/Aside';
 import {CartLineItem} from '~/components/CartLineItem';
 import {CartSummary} from './CartSummary';
+import EppoRandomizationProvider from '~/components/EppoRandomizationProvider';
+import OfferComponent from '~/components/OfferComponent';
 
 /**
  * The main cart component that displays the cart items and summary.
@@ -24,6 +26,10 @@ export function CartMain({layout, cart: originalCart}) {
   return (
     <div className={className}>
       <CartEmpty hidden={linesCount} layout={layout} />
+      {/* <EppoComponent /> */}
+      <EppoRandomizationProvider>
+        <OfferComponent />
+      </EppoRandomizationProvider>
       <div className="cart-details">
         <div aria-labelledby="cart-lines">
           <ul>
@@ -32,7 +38,7 @@ export function CartMain({layout, cart: originalCart}) {
             ))}
           </ul>
         </div>
-        {cartHasItems && <CartSummary cart={cart} layout={layout} />}
+        {cartHasItems && <CartSummary cart={cart} layout={layout} />}        
       </div>
     </div>
   );

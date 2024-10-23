@@ -13,6 +13,8 @@
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {
+    "@eppo/js-client-sdk": "^3.6.0",
+    "@eppo/node-server-sdk": "^3.4.0",
     "@remix-run/react": "^2.10.1",
     "@remix-run/server-runtime": "^2.10.1",
     "@shopify/hydrogen": "2024.7.9",
@@ -20,13 +22,16 @@
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "isbot": "^3.8.0",
+    "n": "^10.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "stable": "^0.1.8"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.2",
     "@remix-run/dev": "^2.10.1",
     "@remix-run/eslint-config": "^2.10.1",
+    "@rollup/plugin-commonjs": "^28.0.0",
     "@shopify/cli": "~3.68.0",
     "@shopify/hydrogen-codegen": "^0.3.1",
     "@shopify/mini-oxygen": "^3.0.5",
@@ -34,12 +39,12 @@
     "@shopify/prettier-config": "^1.1.2",
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/eslint": "^8.4.10",
-    "@types/react": "^18.2.22",
-    "@types/react-dom": "^18.2.7",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
     "eslint": "^8.20.0",
     "eslint-plugin-hydrogen": "0.12.2",
     "prettier": "^2.8.4",
-    "typescript": "^5.2.2",
+    "typescript": "^5.6.3",
     "vite": "^5.1.0",
     "vite-tsconfig-paths": "^4.3.1"
   },
