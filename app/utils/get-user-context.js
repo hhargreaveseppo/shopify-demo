@@ -5,16 +5,16 @@
  * @param {string} cookieString - The raw cookie string from the request headers (server) or `document.cookie` (client)
  * @returns {Object} A parsed object of cookie key-value pairs
  */
-function parseCookies(cookieString = '') {
-    return cookieString
-      .split(';')
-      .map(cookie => cookie.trim())
-      .reduce((acc, cookie) => {
-        const [key, value] = cookie.split('=');
-        acc[key] = decodeURIComponent(value);
-        return acc;
-      }, {});
-  }
+// function parseCookies(cookieString = '') {
+//     return cookieString
+//       .split(';')
+//       .map(cookie => cookie.trim())
+//       .reduce((acc, cookie) => {
+//         const [key, value] = cookie.split('=');
+//         acc[key] = decodeURIComponent(value);
+//         return acc;
+//       }, {});
+//   }
   
   /**
    * Get cookies from the request (server-side) or from the browser (client-side).
@@ -22,20 +22,20 @@ function parseCookies(cookieString = '') {
    * @param {Request} [request] - Optional request object (for server-side use)
    * @returns {Object} The parsed cookies
    */
-  function getCookies(request = null) {
-    // Server-side (when the `request` object is provided)
-    if (request && request.headers) {
-      return parseCookies(request.headers.get('Cookie'));
-    }
+  // function getCookies(request = null) {
+  //   // Server-side (when the `request` object is provided)
+  //   if (request && request.headers) {
+  //     return parseCookies(request.headers.get('Cookie'));
+  //   }
     
-    // Client-side (browser)
-    if (typeof document !== 'undefined') {
-      return parseCookies(document.cookie);
-    }
+  //   // Client-side (browser)
+  //   if (typeof document !== 'undefined') {
+  //     return parseCookies(document.cookie);
+  //   }
   
-    // Return an empty object if no cookies are found
-    return {};
-  }
+  //   // Return an empty object if no cookies are found
+  //   return {};
+  // }
   
   /**
    * Get user ID from cookies or session data.
