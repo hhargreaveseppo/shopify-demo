@@ -43,8 +43,9 @@ function parseCookies(cookieString = '') {
    * @returns {string|null} The user ID or `null` if not found
    */
   function getUserId(request = null) {
-    const cookies = getCookies(request);
-    return cookies.user_id || Math.random().toString();  // Fill in with userid look up in cookie logic later
+    // const cookies = getCookies(request);
+    // return cookies.user_id || Math.random().toString();  // Fill in with userid look up in cookie logic later
+    return Math.random().toString();
   }
   
   /**
@@ -76,13 +77,13 @@ function parseCookies(cookieString = '') {
    * @returns {Object} User context object containing cookies, user ID, and URL parameters
    */
   function getUserContext(request = null) {
-    const cookies = getCookies(request);
+    // const cookies = getCookies(request);
     const userId = getUserId(request);
     const urlParams = getUrlParams(request);
     
     return {
       userId,
-      cookies,
+      // cookies,
       urlParams,  // Adding URL parameters to the context
       // Add any other user-specific context here
     };

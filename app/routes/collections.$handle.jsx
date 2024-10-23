@@ -39,7 +39,6 @@ async function loadCriticalData({ context, params, request }) {
   const userContext = getUserContext(request); // Extract cookies, userId, and URL params
   
   const userId = userContext.userId || 'guest'; // Use userId or fallback to 'guest'
-  const plan = userContext.cookies.plan || 'free'; // Example: extract 'plan' from cookies
   const forcedVariation = userContext.urlParams.variation || 'default'; // Example: get 'sort' query param
   
   if (!handle) {
